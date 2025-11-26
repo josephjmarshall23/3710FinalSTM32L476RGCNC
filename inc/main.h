@@ -4,3 +4,4 @@
 #define MAX_STEPRATE (MAX_FEEDRATE/40)*3200 //In steps per second
 #define X_STEPS_PER_MM 80
 #define Y_STEPS_PER_MM 60 //Needs to be adjusted to correct value
+#define INTERRUPT_RATE 40000 //How often the SysTick interrupt is called, which updates the steppers

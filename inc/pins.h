@@ -12,7 +12,7 @@
  * X Limit: PC7
  * Y Limit: PB6
  * Z Limit: PA7
- * Limit Switches should be configured pull-up
+ * Limit Switches should be configured pull-down. They are driven high on event.
 */
 
 #define X_STEP_BITPOS_GPIOA (1U << 10)
@@ -24,3 +24,4 @@
 #define X_LIMIT_BITPOS_GPIOC (1U << 7)
 #define Y_LIMIT_BITPOS_GPIOB (1U << 6)
 #define Z_LIMIT_BITPOS_GPIOA (1U << 7)
+#define ENABLE_BITPOS_GPIOA (1U << 9)
