@@ -1,7 +1,11 @@
 #pragma once
 
-#define MAX_FEEDRATE 1000 //In mm/s. The slower this is, the longer moves we can store in our limited memory.
-#define MAX_STEPRATE (MAX_FEEDRATE/40)*3200 //In steps per second
-#define X_STEPS_PER_MM 80
-#define Y_STEPS_PER_MM 60 //Needs to be adjusted to correct value
+#define MAX_FEEDRATE 10000 //In mm/min
+#define X_STEPS_PER_MM 80 //Exactly correct (theoretically, belt axis)
+#define Y_STEPS_PER_MM 69 //Needs to be adjusted to correct value, but should be close (calculated 69.3)
+#define X_STEPS_PER_MM_2 2*X_STEPS_PER_MM //These are just defined here to prevent computing them often in the hot loop.
+#define Y_STEPS_PER_MM_2 2*Y_STEPS_PER_MM
+#define X_HOMING_DELAY 20
+#define Y_HOMING_DELAY 20
 #define INTERRUPT_RATE 40000 //How often the SysTick interrupt is called, which updates the steppers
+#define LINE_QUEUE_MAX 200
