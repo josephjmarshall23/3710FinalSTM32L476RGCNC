@@ -46,12 +46,13 @@ Hardware (electrical)
   ###Timeline/Division of Labor
  | Task | Assigned To | Status |
 |------|-------------|--------|
-| Finish hardware | J | |
+| Finish hardware | J | Mostly Done |
 | UART receiving + ACK system; test G-code senders | N | |
 | Limited G-code parser (line, home, pen lift/unlift) | N | |
-| Line function in parser | J | |
-| Investigate Inkscape G-code for pen lifter | J | |
+| Line function in parser | J | Tested |
+| Investigate Inkscape G-code for pen lifter | J | Done |
 | Test minimally viable project (draw something simple) | J & N | |
+| Add arc support | J | |
 | Add bells and whistles | J & N | |
 
 
