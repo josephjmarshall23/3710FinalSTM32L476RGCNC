@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include "stm32l476xx.h"
 #include "systick.h"
-#include "stepper.h"
 
 void SysTick_Initialize(uint32_t ticks) //Stolen straight from Dr. Zhu's slides
 {
@@ -14,7 +13,7 @@ void SysTick_Initialize(uint32_t ticks) //Stolen straight from Dr. Zhu's slides
 		SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk; //Enable the thing
 }
 
-//This interrupt routine is now defined in interrupt.c, with the rest of the line drawing code.
+//This interrupt routine is now defined in interrupt.c, with the rest of the line drawing code. Just here so you remember the format.
 //void SysTick_Handler(void)
 //{
 //

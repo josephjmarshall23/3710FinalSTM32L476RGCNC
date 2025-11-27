@@ -1,6 +1,8 @@
-#pragma once
 #include "pins.h"
 #include "systick.h"
+#include "stm32l476xx.h"
+#include "main.h"
+#include "init.h"
 
 void system_init()
 {
@@ -31,4 +33,11 @@ void system_init()
 	GPIOC->MODER &= 0xFFFF3FFF; //Set PC7 to input (00)
 	GPIOC->PUPDR &= 0xFFFFBFFF; //Set PC7 to pull-down (10)
 	GPIOC->PUPDR |= 0x00008000;
+
+	SysTick_Initialize(48000000/INTERRUPT_RATE); //Set SysTick to tick at interrupt rate
+
+	//Enable FPU (this was a nasty bug to find)
+	SCB->CPACR |= ((3UL << 20U) | (3UL << 22U));
+
+	lineQueueCount = 0;
 }
