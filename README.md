@@ -43,7 +43,7 @@ Hardware (electrical)
   Keypad interface for jogging and homing
   Acceleration handler 
 
-  ###Timeline/Division of Labor
+  ### Timeline/Division of Labor
  | Task | Assigned To | Status |
 |------|-------------|--------|
 | Finish hardware | J | Mostly Done |
