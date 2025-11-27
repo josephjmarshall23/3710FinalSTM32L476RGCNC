@@ -43,15 +43,17 @@ Hardware (electrical)
   Keypad interface for jogging and homing
   Acceleration handler 
 
-  # timeline (division of labor)
+  ###Timeline/Division of Labor
+ | Task | Assigned To | Status |
+|------|-------------|--------|
+| Finish hardware | J | |
+| UART receiving + ACK system; test G-code senders | N | |
+| Limited G-code parser (line, home, pen lift/unlift) | N | |
+| Line function in parser | J | |
+| Investigate Inkscape G-code for pen lifter | J | |
+| Test minimally viable project (draw something simple) | J & N | |
+| Add bells and whistles | J & N | |
 
-  1. finish hardware (J)
-  2. UART recieving and ack system and testing gcode senders (N)
-  3. limited G-code parser with just line, home, and pen lift/unlift (N)
-  4. line function in parser (J)
-  5. investigate inkscape gcode for pen lifter (J)
-  6. test minimally viable project (draw something simple) (J&N)
-  7. add bells and whistles (J&N)
 
 
   
