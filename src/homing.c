@@ -7,7 +7,7 @@ void homeX()
 {
 	uint32_t endstop = 0;
 	int i;
-	setDirection(0); //Set to negative X direction
+	setDirection(0); //Set to negative X direction (towards X=0)
 	while (!endstop)
 	{
 		endstop = GPIOC->IDR & X_LIMIT_BITPOS_GPIOC; //When triggered, will be 64 or 128 or some nonzero value
@@ -18,9 +18,9 @@ void homeX()
 
 void homeY()
 {
-	uint32_t endstop = 0;
+	uint32_t endstop = 1; //Must start high!
 	int i;
-	setDirection(2); //Set to positive Y direction
+	setDirection(2); //Set to positive Y direction (towards Y=Y_MAX_POS)
 	while (endstop) //Endstop is different for Y- we move until the paper is NOT detected, then stop
 	{
 		endstop = GPIOB->IDR & Y_LIMIT_BITPOS_GPIOB; //When triggered, will be 64 or 128 or some nonzero value

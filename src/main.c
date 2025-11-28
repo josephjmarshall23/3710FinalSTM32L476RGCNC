@@ -5,6 +5,7 @@
 #include "pins.h"
 #include "systick.h"
 #include "interrupt.h"
+#include "arc.h"
 
 int main()
 {
@@ -25,55 +26,36 @@ int main()
 
 	enableSteppers();
 
-	homeX();
-	homeY();
-
-	disableSteppers();
-
-	while (1);
-
 	//Test pen lift/unlift
 	penLift();
 //	penUnlift();
 
-	//Set direction to X+, Y+
-	setDirection(0);
+	homeX();
+	//Don't home Y (not working great yet)
 
-	//Test X positive movement (400 steps)
-	for (int i = 0; i < 1600; i++)
-	{
-		stepX();
-		for (int j = 0; j < 200; j++);
-	}
-
-
-	//Test Y positive movement (400 steps)
-	for (int i = 0; i < 1600; i++)
-	{
-		stepY();
-		for (int j = 0; j < 200; j++);
-	}
-
+//
+//	penLift();
 	penUnlift();
-	penLift();
-	penUnlift();
+//
+//	penLift();
+//	penUnlift();
+//
+//
+//
+//	//Test 3 lines
+	writeLine(0.0, 0.0, 50.0, 50.0, 600);
+	writeLine(50.0, 50.0, 50.0, 100.0, 600);
 
-	penLift();
-	penUnlift();
-
-	penLift();
-	penUnlift();
-
-
-
-	//Test 3 lines
-	writeLine(0.0, 0.0, 50.0, 0.0, 600);
-	writeLine(50.0, 0.0, 50.0, 50.0, 600);
-	writeLine(50.0, 50.0, 0.0, 0.0, 600);
-
+	writeArc(50.0, 100.0, 50.0, 150.0, 0.0, 25.0, 600, 1);
+	writeArc(50.0, 150.0, 50.0, 200.0, 0.0, 25.0, 600, 0);
+//
 	while(1)
 	{
 		updateLine();
 	}
+//	while(1)
+//	{
+//		updateLine();
+//	}
 //	disableSteppers();
 }

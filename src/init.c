@@ -27,8 +27,8 @@ void system_init()
 	GPIOB->MODER &= 0xFFDFC57F; //Set PB6 to input (00) and PB3-PB5, PB10 as output (01)
 	GPIOB->MODER |= 0x00100540;
 	GPIOB->OTYPER &= 0xFFFFFBC7; //Set PB3-PB5 and PB10 as push-pull (0)
-	GPIOB->PUPDR &= 0xFFFFEFFF; //Set PB6 to pull-down (10)
-	GPIOB->PUPDR |= 0x00002000;
+	GPIOB->PUPDR &= 0xFFFFDFFF; //Set PB6 to pull-up (01)
+	GPIOB->PUPDR |= 0x00001000;
 
 	GPIOC->MODER &= 0xFFFF3FFF; //Set PC7 to input (00)
 	GPIOC->PUPDR &= 0xFFFFBFFF; //Set PC7 to pull-down (10)
