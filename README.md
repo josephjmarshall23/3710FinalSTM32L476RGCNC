@@ -49,11 +49,12 @@ Hardware (electrical)
 | Finish hardware | J | Done |
 | UART receiving + ACK system; test G-code senders | N | |
 | Limited G-code parser (line, home, pen lift/unlift) | N | |
-| Line function in parser | J | Tested |
+| Send string to identify as GRBL firmware | N | Done |
+| Line function in parser | J | Done & Tested |
 | Investigate Inkscape G-code for pen lifter | J | Done |
 | Test minimally viable project (draw something simple) | J & N | |
-| Add arc support | J | Tested |
-| Calibrate axes for correct distance | J | |
+| Add arc support | J | Done & Tested |
+| Calibrate axes for correct distance | J | Done |
 | Add bells and whistles | J & N | |
 | Add acceleration control | | |
 
