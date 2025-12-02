@@ -14,7 +14,7 @@ typedef struct {
 
 int pushToLineQueue(line in);
 int popFromLineQueue(line *out);
-void writeLine(float x_init, float y_init, float x_final, float y_final, float feedrate);
+void writeLine(float x_dist, float y_dist, float feedrate);
 void updateLine();
 //void SysTick_Handler(); //Doesn't need to be declared, but just for reference
 

@@ -41,7 +41,7 @@ static inline void setDirection(uint8_t dir) //Bit 0: x dir, Bit 1: y dir
 	if (dir & 0x01) bsrr |= X_DIR_BITPOS_GPIOB;
 	if (dir & 0x02) bsrr |= Y_DIR_BITPOS_GPIOB;
 	if (!(dir & 0x01)) bsrr |= X_DIR_BITPOS_GPIOB << 16;
-	if (!(dir & 0x01)) bsrr |= Y_DIR_BITPOS_GPIOB << 16;
+	if (!(dir & 0x02)) bsrr |= Y_DIR_BITPOS_GPIOB << 16;
 	GPIOB->BSRR = bsrr; //Not sure why we didn't use this more. Top 16 bits reset a bit to 0, bottom 16 set a bit to 1.
 }
 
