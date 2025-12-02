@@ -1,0 +1,24 @@
+main() {
+
+  init_UART();
+  get_Gcommand();
+  execute_Gcommand();
+
+}
+
+init_copied from lab 8
+
+get_Gcommand() {
+
+  char command[40][15];
+
+  while(!NULL) {
+    get string from UART character by character using interrupts (lab 8)
+    use space char as a deliminator to save each chunk of the command in an array as separate elements
+    increment count of elements
+  }
+  
+  assemble the string and go until an end char
+  splice 
+
+}
