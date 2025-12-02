@@ -26,36 +26,45 @@ int main()
 
 	enableSteppers();
 
-	//Test pen lift/unlift
 	penLift();
-//	penUnlift();
 
 	homeX();
-	//Don't home Y (not working great yet)
+	homeY();
 
-//
-//	penLift();
 	penUnlift();
-//
-//	penLift();
-//	penUnlift();
-//
-//
-//
-//	//Test 3 lines
-	writeLine(0.0, 0.0, 50.0, 50.0, 600);
-	writeLine(50.0, 50.0, 50.0, 100.0, 600);
 
-	writeArc(50.0, 100.0, 50.0, 150.0, 0.0, 25.0, 600, 1);
-	writeArc(50.0, 150.0, 50.0, 200.0, 0.0, 25.0, 600, 0);
-//
+	writeLine(0.0, -150.0, 1800);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 1800);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, -150.0, 8400);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 8400);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, -150.0, 9600);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 9600);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, -150.0, 10800);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 10800);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, -150.0, 12000);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 12000);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, -150.0, 13200);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 13200);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, -150.0, 14400);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 14400);
+	writeLine(3.0, 0.0, 1800);
+
 	while(1)
 	{
 		updateLine();
 	}
-//	while(1)
-//	{
-//		updateLine();
-//	}
 //	disableSteppers();
 }

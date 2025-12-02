@@ -15,16 +15,14 @@ float findRadius(float x_dist, float y_dist) //These are distances from arc star
 //clockwise should be 1 for clockwise and 0 for counterclockwise
 //I'm worried this function may be an absolute monster.
 //It involves a TON of float math, including 2 divs, 2 atan2s, a fabs, a sqrt, and a lot of sin/cos
-void writeArc(float x_init, float y_init, float x_final, float y_final, float x_center_offset, float y_center_offset, float feedrate, int clockwise)
+void writeArc(float x_final_offset, float y_final_offset, float x_center_offset, float y_center_offset, float feedrate, int clockwise)
 {
-	float x_center = x_init + x_center_offset;
-	float y_center = y_init + y_center_offset;
 	float rad = findRadius(x_center_offset, y_center_offset);
 	if (rad < 0.1) //No-op
 		return;
 
 	float theta_start = atan2(-y_center_offset, -x_center_offset);
-	float theta_end = atan2((y_final - y_center), (x_final - x_center));
+	float theta_end = atan2((y_final_offset - y_center_offset), (x_final_offset - x_center_offset));
 	float theta_total = theta_end-theta_start;
 
 	if (clockwise && theta_total > 0) theta_total -= TWO_PI;
@@ -40,18 +38,18 @@ void writeArc(float x_init, float y_init, float x_final, float y_final, float x_
 	float delta_theta = theta_total / num_segments;
 	float theta_cur;
 
-	float prev_x = x_init;
-	float prev_y = y_init;
+	float prev_x = 0;
+	float prev_y = 0;
 	float cur_x, cur_y;
 
 	for (int i = 1; i <= num_segments; i++)
 	{
 		theta_cur = theta_start + ((float)i * delta_theta); //The current angle we are at relative to arc centerpoint
 
-		cur_x = x_center + rad*cos(theta_cur);
-		cur_y = y_center + rad*sin(theta_cur);
+		cur_x = x_center_offset + rad*cos(theta_cur);
+		cur_y = y_center_offset + rad*sin(theta_cur);
 
-		writeLine(prev_x, prev_y, cur_x, cur_y, feedrate);
+		writeLine(cur_x-prev_x, cur_y-prev_y, feedrate);
 
 		prev_x = cur_x;
 		prev_y = cur_y;

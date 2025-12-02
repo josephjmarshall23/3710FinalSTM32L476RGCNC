@@ -46,36 +46,36 @@ int popFromLineQueue(line *out)
 	return 1;
 }
 
-void writeLine(float x_init, float y_init, float x_final, float y_final, float feedrate) //Units are mm and mm/s. x_init and y_init will be current position
+void writeLine(float x_dist, float y_dist, float feedrate) //Units are mm and mm/s. x_init and y_init will be current position
 {
 	float len, time; //Static so we don't make a new one every time
-	line temp;
+	static line temp;
 
     temp.direction = 0x00;
-    if (x_final >= x_init)
+    if (x_dist >= 0.0f)
     {
         temp.direction |= 0x01;
-        temp.dx2 = (int32_t) ((x_final-x_init)*X_STEPS_PER_MM_2);
+        temp.dx2 = (int32_t) ((x_dist)*X_STEPS_PER_MM_2);
     }
     else
     {
-        temp.dx2 = (int32_t) ((x_init-x_final)*X_STEPS_PER_MM_2);
+        temp.dx2 = (int32_t) ((-x_dist)*X_STEPS_PER_MM_2);
     }
-    if (y_final >= y_init)
+    if (y_dist >= 0.0f)
     {
         temp.direction |= 0x02;
-        temp.dy2 = (int32_t) ((y_final-y_init)*X_STEPS_PER_MM_2);
+        temp.dy2 = (int32_t) ((y_dist)*Y_STEPS_PER_MM_2);
     }
     else
     {
-        temp.dy2 = (int32_t) ((y_init-y_final)*X_STEPS_PER_MM_2);
+        temp.dy2 = (int32_t) ((-y_dist)*Y_STEPS_PER_MM_2);
     }
 
     //Calculate total number of steps
-    len = sqrt((float)(temp.dx2 >> 1)*(temp.dx2 >> 1)+(float)(temp.dy2 >> 1)*(temp.dy2 >> 1));
+    len = sqrt((x_dist*x_dist)+(y_dist*y_dist));
     if (feedrate > MAX_FEEDRATE) //Make sure we don't go over the speed limit
     	feedrate = MAX_FEEDRATE;
-    time = len/(60*feedrate); //time is in seconds now (converted feedrate from mm/min to mm/sec)
+    time = len*120/(feedrate); //time is in seconds now (converted feedrate from mm/min to mm/sec) (Also compensated for being off by 2x)
     temp.numTicks = time*INTERRUPT_RATE;
     temp.dt2 = temp.numTicks << 1; //Multiply by 2
     while (!getLineQueueSpace()); //Wait until ready
@@ -90,17 +90,17 @@ void updateLine() //Should be called repeatedly in main.c.
 
     disableSteppers(); //Pause steppers until we are finished readying the next line
 
-    static line temp;
-    if (!popFromLineQueue(&temp)) return; //If nothing in queue, return
+    static line tmp;
+    if (!popFromLineQueue(&tmp)) return; //If nothing in queue, return
 
-    curLine.dt2 = temp.dt2; //These have been pre-multiplied by 2 to save computation later
-    curLine.dx2 = temp.dx2;
-    curLine.dy2 = temp.dy2;
-    curLine.numTicks = temp.numTicks >> 1; //How many interrupt ticks this line will take to draw
-    Dx = temp.dx2-temp.numTicks; //X decision variable
-    Dy = temp.dy2-temp.numTicks; //Y decision variable
+    curLine.dt2 = tmp.dt2; //These have been pre-multiplied by 2 to save computation later
+    curLine.dx2 = tmp.dx2;
+    curLine.dy2 = tmp.dy2;
+    curLine.numTicks = tmp.numTicks >> 1; //How many interrupt ticks this line will take to draw
+    Dx = tmp.dx2-tmp.numTicks; //X decision variable
+    Dy = tmp.dy2-tmp.numTicks; //Y decision variable
 
-    setDirection(temp.direction);
+    setDirection(tmp.direction);
     enableSteppers(); //Re-enable steppers
 }
 

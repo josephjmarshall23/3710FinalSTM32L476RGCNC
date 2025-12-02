@@ -6,12 +6,24 @@
 
 void system_init()
 {
-	//First, set MSI clock range
-	while ((RCC->CR & RCC_CR_MSIRDY) == 0); //should only be modified once MSIRDY is high
-	RCC->CR |= RCC_CR_MSIRGSEL;
-	RCC->CR &= ~RCC_CR_MSIRANGE_11; //Clear bits if needed
-	RCC->CR |= RCC_CR_MSIRANGE_11; //Set bits for 48 MHz clock
-	while ((RCC->CR & RCC_CR_MSIRDY) == 0); //Wait for MSI clock to stabilize
+	//Set HSI clock
+	RCC->CR |= RCC_CR_HSION;
+	while ((RCC->CR & RCC_CR_HSIRDY) == 0);
+	RCC->CFGR |= 1;
+
+//	//First, set MSI clock range
+//	RCC->CR |= RCC_CR_MSION;
+//	while ((RCC->CR & RCC_CR_MSIRDY) == 0); //should only be modified once MSIRDY is high
+//	RCC->CR |= RCC_CR_MSIRGSEL;
+//	RCC->CR &= ~RCC_CR_MSIRANGE_11; //Clear bits if needed
+//	RCC->CR |= RCC_CR_MSIRANGE_11; //Set bits for 48 MHz clock
+//	while ((RCC->CR & RCC_CR_MSIRDY) == 0); //Wait for MSI clock to stabilize
+//
+//	FLASH->ACR &= ~FLASH_ACR_LATENCY; //Set flash wait states to 2
+//	FLASH->ACR |= FLASH_ACR_LATENCY_2WS;
+//
+//	RCC->CFGR &= ~RCC_CFGR_SW; //Make sure we use MSI clock
+//	RCC->CFGR |= RCC_CFGR_SW_MSI;
 
 	//Set pins defined in pins.h
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN; //Enable clocks to GPIO A, B, and C
@@ -34,7 +46,7 @@ void system_init()
 	GPIOC->PUPDR &= 0xFFFFBFFF; //Set PC7 to pull-down (10)
 	GPIOC->PUPDR |= 0x00008000;
 
-	SysTick_Initialize(48000000/INTERRUPT_RATE); //Set SysTick to tick at interrupt rate
+	SysTick_Initialize(CLOCK_RATE/INTERRUPT_RATE); //Set SysTick to tick at interrupt rate
 
 	//Enable FPU (this was a nasty bug to find)
 	SCB->CPACR |= ((3UL << 20U) | (3UL << 22U));
