@@ -6,19 +6,36 @@ main() {
 
 }
 
-init_copied from lab 8
+init_UART copied from lab 8
+  additionally need to print GRBL version to start comms
+  printPgmString(PSTR("\r\nGrbl " GRBL_VERSION " ['$' for help]\r\n"));
+
 
 get_Gcommand() {
 
-  char command[40][15];
+  char command[40][15]; //array of 40 strings of 15 chars
 
   while(!NULL) {
     get string from UART character by character using interrupts (lab 8)
     use space char as a deliminator to save each chunk of the command in an array as separate elements
     increment count of elements
   }
-  
-  assemble the string and go until an end char
-  splice 
+
+
+}
+execute_Gcommand() {
+
+  switch(command[1]){
+  case: G0 //rapid move (travel, should move as fast as possible to position, no drawing)
+  case: G1 //drawing line (move at specificed speed)
+  case: G2 //arc clock wise
+  case: G3 //arc counter clock wise (ask joe how to do it might just need to call draw arc and invert an argument)
+  case: G28 //home 
+  //... see what else is in inkscape gcode
+  default: 
+    return Error code over UART
+
+
+  }
 
 }
