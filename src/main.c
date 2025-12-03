@@ -6,6 +6,7 @@
 #include "systick.h"
 #include "interrupt.h"
 #include "arc.h"
+#include "Gcode.h"
 
 int main()
 {
@@ -26,45 +27,23 @@ int main()
 
 	enableSteppers();
 
-	penLift();
-
-	homeX();
-	homeY();
-
-	penUnlift();
-
-	writeLine(0.0, -150.0, 1800);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 1800);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, -150.0, 8400);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 8400);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, -150.0, 9600);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 9600);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, -150.0, 10800);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 10800);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, -150.0, 12000);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 12000);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, -150.0, 13200);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 13200);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, -150.0, 14400);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 14400);
-	writeLine(3.0, 0.0, 1800);
+//	penLift();
+//
+//	homeX();
+//	homeY();
+//
+//	penUnlift();
 
 	while(1)
 	{
 		updateLine();
+		if (is_room_in_buffer)
+		{
+			acknowledge();
+			Gcode_parser();
+			for(int j = 0; j < 100; j++);
+		}
+
 	}
 //	disableSteppers();
 }

@@ -3,6 +3,7 @@
 #include "motion.h"
 #include "main.h"
 #include "interrupt.h"
+#include "UART.h"
 
 int32_t Dx, Dy;
 //dt = numTicks; //numTicks
@@ -84,7 +85,7 @@ void writeLine(float x_dist, float y_dist, float feedrate) //Units are mm and mm
 
 void updateLine() //Should be called repeatedly in main.c.
 {
-	is_room_in_buffer = (getLineQueueSpace() > 100) ? 1 : 0;
+	is_room_in_buffer = (getLineQueueSpace() > ARC_MAX_SEGMENTS+1) ? 1 : 0;
     if (curLine.numTicks)
         return; //We wait for the current line to finish
 

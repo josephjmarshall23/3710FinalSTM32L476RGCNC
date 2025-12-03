@@ -3,6 +3,8 @@
 #include "stm32l476xx.h"
 #include "main.h"
 #include "init.h"
+#include "Gcode.h"
+#include "UART.h"
 
 void system_init()
 {
@@ -52,4 +54,11 @@ void system_init()
 	SCB->CPACR |= ((3UL << 20U) | (3UL << 22U));
 
 	lineQueueCount = 0;
+
+	USART_Init(USART2);
+	startupString(); //Prints a string over serial that tells G-code sender we are running GRBL firmware (we aren't, but pretend)
+//	char ch;
+//	USART_Read(USART2, (uint8_t*)&ch, 1);
+//	if (ch == '\n' || ch == '\r')
+//		startupString();
 }
