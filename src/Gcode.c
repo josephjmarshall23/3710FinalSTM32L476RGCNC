@@ -15,6 +15,7 @@
 #include "systick.h"
 #include "homing.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void Gcode_parser(void) {
 
@@ -22,12 +23,16 @@ void Gcode_parser(void) {
 	uint32_t element_count = 0;
 	uint32_t char_count = 0;
 	float feedrate = 2500;
-	float cur_x = 0.0;
-	float cur_y = 0.0;
+	float cur_x = 0.01;
+	float cur_y = 0.01;
 
 	char read_char = '#'; //random value so its not NULL
 	
-  while((read_char != '\r') &&(read_char != '\n') && (read_char != '(')) {//while we aren't on a comment or at the end of a line get data
+	// Skip leftover \n or \r from last transmission (can be stored in FIFO still)
+	do {
+		USART_Read(USART2, (uint8_t*)&read_char, 1);
+	} while (read_char == '\r' || read_char == '\n');
+	while((read_char != '\r') &&(read_char != '\n')) {//while we aren't on a comment or at the end of a line get data
 		
     //get single char from uart
 		USART_Read(USART2, (uint8_t*)&read_char, 1);
@@ -35,6 +40,7 @@ void Gcode_parser(void) {
 		
 		//use space char as a deliminator to save each chunk of the command in an array as separate elements
 		if(read_char == ' '){
+			command[element_count][char_count] = '\0'; //Null-terminate
 			element_count++;
 			char_count = 0;
 		}
@@ -43,10 +49,16 @@ void Gcode_parser(void) {
 			char_count++;
 		}
 	}
+	command[element_count][char_count] = '\0'; //Null-terminate
+
 	
-	
+	char str[50];
+	sprintf(str, "Cur: (%05d, %05d)\r\n", (int)cur_x*1000, (int)cur_y*1000);
+	USART_Write(USART2, (unsigned char*)str, strlen(str));  //serial testing line
 	float to_relative_x = atof(command[1]+1) - cur_x; //Parse after 'X'
 	float to_relative_y = atof(command[2]+1) - cur_y; //Parse after 'Y'
+	sprintf(str, "Rel: (%05d, %05d)\r\n", (int)to_relative_x*1000, (int)to_relative_y*1000);
+	USART_Write(USART2, (unsigned char*)str, strlen(str));  //serial testing line
 	
 	//switch to call correct command
 	if (command[0][0] == 'G')
@@ -143,7 +155,7 @@ void startupString()
  void acknowledge()
  {
 		USART_Write(USART2, (unsigned char*)"ok\r\n", 4);  //serial testing line
-		char str[10];
+		char str[15];
 		sprintf(str, "%04d\r\n", LINE_QUEUE_MAX-getLineQueueSpace());
 		USART_Write(USART2, (unsigned char*)str, 6);  //serial testing line
 

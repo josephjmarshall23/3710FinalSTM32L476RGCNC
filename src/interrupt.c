@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 #include <math.h>
 #include "motion.h"
 #include "main.h"
@@ -76,19 +77,19 @@ void writeLine(float x_dist, float y_dist, float feedrate) //Units are mm and mm
     len = sqrt((x_dist*x_dist)+(y_dist*y_dist));
     if (feedrate > MAX_FEEDRATE) //Make sure we don't go over the speed limit
     	feedrate = MAX_FEEDRATE;
-    time = len*120/(feedrate); //time is in seconds now (converted feedrate from mm/min to mm/sec) (Also compensated for being off by 2x)
+    time = len*60/(feedrate); //time is in seconds now (converted feedrate from mm/min to mm/sec) (Also compensated for being off by 2x)
     temp.numTicks = time*INTERRUPT_RATE;
     temp.dt2 = temp.numTicks << 1; //Multiply by 2
-    while (!getLineQueueSpace()); //Wait until ready
+    while (!getLineQueueSpace()) USART_Write(USART2, (unsigned char*)"noLineQueueSpace\r\n", 18); //Wait until ready
     pushToLineQueue(temp);
 }
 
 void updateLine() //Should be called repeatedly in main.c.
 {
 	is_room_in_buffer = (getLineQueueSpace() > ARC_MAX_SEGMENTS+1) ? 1 : 0;
-    if (curLine.numTicks)
+    if (curLine.numTicks > 0)
         return; //We wait for the current line to finish
-
+//    USART_Write(USART2, (unsigned char*)"done with line\r\n", 16);
     disableSteppers(); //Pause steppers until we are finished readying the next line
 
     static line tmp;
@@ -97,9 +98,12 @@ void updateLine() //Should be called repeatedly in main.c.
     curLine.dt2 = tmp.dt2; //These have been pre-multiplied by 2 to save computation later
     curLine.dx2 = tmp.dx2;
     curLine.dy2 = tmp.dy2;
-    curLine.numTicks = tmp.numTicks >> 1; //How many interrupt ticks this line will take to draw
-    Dx = tmp.dx2-tmp.numTicks; //X decision variable
-    Dy = tmp.dy2-tmp.numTicks; //Y decision variable
+    curLine.numTicks = tmp.numTicks; //How many interrupt ticks this line will take to draw
+    Dx = tmp.dx2-tmp.numTicks; //X decision variable (global)
+    Dy = tmp.dy2-tmp.numTicks; //Y decision variable (global)
+    char str[40];
+    sprintf(str, "DX:%015ld DY:%015ld\r\n", Dx, Dy);
+	USART_Write(USART2, (unsigned char*)str, 39);
 
     setDirection(tmp.direction);
     enableSteppers(); //Re-enable steppers
@@ -107,8 +111,10 @@ void updateLine() //Should be called repeatedly in main.c.
 
 void SysTick_Handler()  //We replace dx and dy with dt (ticks), dx (x steps), dy (y steps). Completes one round of Bresenham's algorithm.
 {
-    if (!curLine.numTicks)
+    if (curLine.numTicks <= 0)
+    {
         return;
+    }
 
     if (Dx > 0)
     {
