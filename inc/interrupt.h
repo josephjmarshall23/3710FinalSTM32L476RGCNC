@@ -18,6 +18,7 @@ void writeLine(float x_dist, float y_dist, float feedrate);
 void updateLine();
 //void SysTick_Handler(); //Doesn't need to be declared, but just for reference
 
+extern uint8_t is_room_in_buffer;
 extern uint32_t lineQueueCount;
 static inline int getLineQueueSpace()
 {
