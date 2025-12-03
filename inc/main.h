@@ -17,4 +17,4 @@
 #define INTERRUPT_RATE 40000 //How often the SysTick interrupt is called, which updates the steppers
 #define LINE_QUEUE_MAX 40
 #define ARC_LINE_LENGTH 1 //Arcs are divided into ~1mm length lines.
-#define ARC_MAX_SEGMENTS 2
+#define ARC_MAX_SEGMENTS 30
