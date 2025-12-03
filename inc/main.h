@@ -15,6 +15,6 @@
 #define X_HOMING_POS X_MIN
 #define CLOCK_RATE 16000000
 #define INTERRUPT_RATE 40000 //How often the SysTick interrupt is called, which updates the steppers
-#define LINE_QUEUE_MAX 4
+#define LINE_QUEUE_MAX 40
 #define ARC_LINE_LENGTH 1 //Arcs are divided into ~1mm length lines.
 #define ARC_MAX_SEGMENTS 2
