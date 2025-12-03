@@ -4,6 +4,7 @@
 #include "motion.h"
 #include "main.h"
 #include "interrupt.h"
+#include "homing.h"
 #include "UART.h"
 
 int32_t Dx, Dy;
@@ -84,6 +85,15 @@ void writeLine(float x_dist, float y_dist, float feedrate) //Units are mm and mm
     pushToLineQueue(temp);
 }
 
+void writeAction(uint8_t action)
+{
+	line temp;
+	temp.numTicks = 0;
+	temp.direction = action;
+	while (!getLineQueueSpace());
+	pushToLineQueue(temp);
+}
+
 void updateLine() //Should be called repeatedly in main.c.
 {
 	is_room_in_buffer = (getLineQueueSpace() > ARC_MAX_SEGMENTS+1) ? 1 : 0;
@@ -94,6 +104,18 @@ void updateLine() //Should be called repeatedly in main.c.
 
     static line tmp;
     if (!popFromLineQueue(&tmp)) return; //If nothing in queue, return
+
+    //Check if this is not a line to be drawn but actions to be performed
+    if (tmp.numTicks == 0)
+    {
+    	if ((tmp.direction & PEN_LIFT)) penLift();
+    	if ((tmp.direction & PEN_DROP)) penUnlift();
+    	if ((tmp.direction & HOME_X)) homeX();
+    	if ((tmp.direction & HOME_Y)) homeY();
+    	if ((tmp.direction & ENABLE_STP)) enableSteppers();
+    	if ((tmp.direction & DISABLE_STP)) disableSteppers();
+    	return; //Actions only happen on a separate queue item from an actual drawn line
+    }
 
     curLine.dt2 = tmp.dt2; //These have been pre-multiplied by 2 to save computation later
     curLine.dx2 = tmp.dx2;

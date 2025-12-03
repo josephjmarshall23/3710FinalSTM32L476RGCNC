@@ -67,11 +67,11 @@ void Gcode_parser(void) {
 			case '0': //move command
 				if(command[1][0] == 'Z'){ //we are moving the pen
 					if(command[1][1] == '-') { //z move is negative meaning lower the pen
-						penUnlift();
+						writeAction(PEN_DROP);
 						USART_Write(USART2, (unsigned char*)"Pen Down\n\r", 10);  //serial testing line
 					}
 					else {	//z move is positive meaning raise the pen
-						penLift();
+						writeAction(PEN_LIFT);
 						USART_Write(USART2, (unsigned char*)"Pen Up\n\r", 8);  //serial testing line
 					}
 				}
@@ -85,11 +85,11 @@ void Gcode_parser(void) {
 			case '1': //draw line command
 				if(command[1][0] == 'Z'){ //we are moving the pen
 					if(command[1][1] == '-') { //z move is negative meaning lower the pen
-						penUnlift();
+						writeAction(PEN_DROP);
 						USART_Write(USART2, (unsigned char*)"Pen Down\n\r", 10);  //serial testing line
 					}
 					else {	//z move is positive meaning raise the pen
-						penLift();
+						writeAction(PEN_LIFT);
 						USART_Write(USART2, (unsigned char*)"Pen Up\n\r", 8);  //serial testing line
 					}
 				}
@@ -111,15 +111,15 @@ void Gcode_parser(void) {
 				break;
 
 			case '8': //home
-				penLift();
-				homeX();
-				homeY();
-				penUnlift();
+				writeAction(PEN_LIFT);
+				writeAction(HOME_X);
+				writeAction(HOME_Y);
+				writeAction(PEN_DROP);
 				cur_x = X_HOMING_POS;
 				cur_y = Y_HOMING_POS;
 				USART_Write(USART2, (unsigned char*)"Home\n\r", 6);  //serial testing line
-				break;
 				USART_Write(USART2, (unsigned char*)"ok\n\r", 4);  //serial testing
+				break;
 
 			default: //do nothing with command and acknowledge to get the next one
 				//acknowledge();
@@ -147,7 +147,7 @@ void Gcode_parser(void) {
 	char_count = 0;
   }
 
-void startupString()
+void startupString() //Required for gcode sender to assume this is Grbl firmware and send appropriate gcodes
 {
 	USART_Write(USART2, (unsigned char*)"Grbl 1.1h ['$' for help]\r\n", 26);  //serial testing line
 }

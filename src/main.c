@@ -37,6 +37,21 @@ int main()
 
 	penUnlift();
 
+	writeLine(0.0, -150.0, 1800);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 1800);
+	writeLine(3.0, 0.0, 1800);
+	writeAction(PEN_LIFT);
+	writeAction(PEN_DROP);
+	writeAction(HOME_X);
+	writeAction(HOME_Y);
+	writeAction(ENABLE_STP);
+	writeAction(DISABLE_STP);
+	writeLine(0.0, -150.0, 1800);
+	writeLine(3.0, 0.0, 1800);
+	writeLine(0.0, 150.0, 1800);
+	writeLine(3.0, 0.0, 1800);
+
 	while(1)
 	{
 		updateLine();
@@ -45,7 +60,8 @@ int main()
 			writeLine(0.0, -150.0, 1800);
 			writeLine(3.0, 0.0, 1800);
 			writeLine(0.0, 150.0, 1800);
-			writeLine(3.0, 0.0, 1800);
+			writeLine(-3.0, 0.0, 1800);
+			writeAction(PEN_LIFT);
 //			acknowledge();
 //			Gcode_parser();
 //			for(int j = 0; j < 100; j++);
