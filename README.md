@@ -47,8 +47,8 @@ Hardware (electrical)
  | Task | Assigned To | Status |
 |------|-------------|--------|
 | Finish hardware | J | Done |
-| UART receiving + ACK system; test G-code senders | N | |
-| Limited G-code parser (line, home, pen lift/unlift) | N | |
+| UART receiving + ACK system; test G-code senders | N | Done |
+| Limited G-code parser (line, home, pen lift/unlift) | N | Done |
 | Send string to identify as GRBL firmware | N | Done |
 | Line function in parser | J | Done & Tested |
 | Investigate Inkscape G-code for pen lifter | J | Done |
