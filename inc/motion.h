@@ -3,6 +3,7 @@
 #include <math.h>
 #include "pins.h"
 #include "stm32l476xx.h"
+#include "homing.h"
 
 static inline void stepX() //Make sure ODR is marked volatile (otherwise may get optimized away)
 {
@@ -63,4 +64,13 @@ static inline void penUnlift()
     	stepZ();
         for (int j = 0; j < 83; j++); //Delay
     }
+}
+
+static inline void machine_init()
+{
+	enableSteppers();
+	penLift();
+	homeX();
+	homeY();
+	penUnlift();
 }
