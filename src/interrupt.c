@@ -100,7 +100,7 @@ void updateLine() //Should be called repeatedly in main.c.
     if (curLine.numTicks > 0)
         return; //We wait for the current line to finish
 //    USART_Write(USART2, (unsigned char*)"done with line\r\n", 16);
-    disableSteppers(); //Pause steppers until we are finished readying the next line
+    //disableSteppers(); //Pause steppers until we are finished readying the next line
 
     static line tmp;
     if (!popFromLineQueue(&tmp)) return; //If nothing in queue, return
@@ -108,10 +108,10 @@ void updateLine() //Should be called repeatedly in main.c.
     //Check if this is not a line to be drawn but actions to be performed
     if (tmp.numTicks == 0)
     {
-    	if ((tmp.direction & PEN_LIFT)) penLift();
-    	if ((tmp.direction & PEN_DROP)) penUnlift();
+    	if ((tmp.direction & PEN_LIFT)) penLift(); //Order of first 4 is intentional- can do first 4 in this order with one line in queue
     	if ((tmp.direction & HOME_X)) homeX();
     	if ((tmp.direction & HOME_Y)) homeY();
+    	if ((tmp.direction & PEN_DROP)) penUnlift();
     	if ((tmp.direction & ENABLE_STP)) enableSteppers();
     	if ((tmp.direction & DISABLE_STP)) disableSteppers();
     	return; //Actions only happen on a separate queue item from an actual drawn line

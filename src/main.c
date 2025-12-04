@@ -7,6 +7,7 @@
 #include "interrupt.h"
 #include "arc.h"
 #include "Gcode.h"
+#include "parser.h"
 #include "UART.h"
 #include <stdio.h>
 #include <string.h>
@@ -28,45 +29,9 @@ int main()
 	//Initialize
 	system_init();
 
-	enableSteppers();
+	//Enable stepper motors and home axes
+	machine_init();
 
-	penLift();
-
-	homeX();
-	homeY();
-
-	penUnlift();
-
-	writeLine(0.0, -150.0, 1800);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 1800);
-	writeLine(3.0, 0.0, 1800);
-	writeAction(PEN_LIFT);
-	writeAction(PEN_DROP);
-	writeAction(HOME_X);
-	writeAction(HOME_Y);
-	writeAction(ENABLE_STP);
-	writeAction(DISABLE_STP);
-	writeLine(0.0, -150.0, 1800);
-	writeLine(3.0, 0.0, 1800);
-	writeLine(0.0, 150.0, 1800);
-	writeLine(3.0, 0.0, 1800);
-
-	while(1)
-	{
-		updateLine();
-		if (is_room_in_buffer)
-		{
-			writeLine(0.0, -150.0, 1800);
-			writeLine(3.0, 0.0, 1800);
-			writeLine(0.0, 150.0, 1800);
-			writeLine(-3.0, 0.0, 1800);
-			writeAction(PEN_LIFT);
-//			acknowledge();
-//			Gcode_parser();
-//			for(int j = 0; j < 100; j++);
-		}
-
-	}
+	parse_loop(); //Endless loop that parses and executes commands
 //	disableSteppers();
 }

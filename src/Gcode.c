@@ -19,12 +19,12 @@
 
 void Gcode_parser(void) {
 
-  char command[40][15]; //array of 40 strings of 15 chars
+	char command[40][15] = {'\0'}; //array of 40 strings of 15 chars
 	uint32_t element_count = 0;
 	uint32_t char_count = 0;
 	float feedrate = 2500;
-	float cur_x = 0.01;
-	float cur_y = 0.01;
+	static float cur_x = 0; //Assumes we start homed
+	static float cur_y = 0;
 
 	char read_char = '#'; //random value so its not NULL
 	
@@ -32,6 +32,7 @@ void Gcode_parser(void) {
 	do {
 		USART_Read(USART2, (uint8_t*)&read_char, 1);
 	} while (read_char == '\r' || read_char == '\n');
+	command[element_count][char_count++] = read_char; //Otherwise, we miss the first character
 	while((read_char != '\r') &&(read_char != '\n')) {//while we aren't on a comment or at the end of a line get data
 		
     //get single char from uart
@@ -51,14 +52,9 @@ void Gcode_parser(void) {
 	}
 	command[element_count][char_count] = '\0'; //Null-terminate
 
-	
 	char str[50];
-	sprintf(str, "Cur: (%05d, %05d)\r\n", (int)cur_x*1000, (int)cur_y*1000);
-	USART_Write(USART2, (unsigned char*)str, strlen(str));  //serial testing line
 	float to_relative_x = atof(command[1]+1) - cur_x; //Parse after 'X'
 	float to_relative_y = atof(command[2]+1) - cur_y; //Parse after 'Y'
-	sprintf(str, "Rel: (%05d, %05d)\r\n", (int)to_relative_x*1000, (int)to_relative_y*1000);
-	USART_Write(USART2, (unsigned char*)str, strlen(str));  //serial testing line
 	
 	//switch to call correct command
 	if (command[0][0] == 'G')
@@ -77,6 +73,8 @@ void Gcode_parser(void) {
 				}
 				else {  //we are drawing a line
 					writeLine(to_relative_x, to_relative_y, feedrate);
+					cur_x += to_relative_x;
+					cur_y += to_relative_y;
 					USART_Write(USART2, (unsigned char*)"WriteLine\n\r", 11);  //serial testing line
 				}
 
@@ -95,6 +93,8 @@ void Gcode_parser(void) {
 				}
 				else {  //we are drawing a line
 					writeLine(to_relative_x, to_relative_y, feedrate);
+					cur_x += to_relative_x;
+					cur_y += to_relative_y;
 					USART_Write(USART2, (unsigned char*)"WriteLine\n\r", 11);  //serial testing line
 				}
 
@@ -102,11 +102,15 @@ void Gcode_parser(void) {
 
 			case '2': //arc clockwise
 				writeArc(to_relative_x, to_relative_y, atof(command[4]+1), atof(command[5]+1), feedrate, 1); //only first two need to be modified, others are already relative 1 at the end means cw
+				cur_x += to_relative_x;
+				cur_y += to_relative_y;
 				USART_Write(USART2, (unsigned char*)"Arc CW\n\r", 8);  //serial testing line
 				break;
 
 			case '3': //arc ccw
 				writeArc(to_relative_x, to_relative_y, atof(command[4]+1), atof(command[5]+1), feedrate, 0); //0 means ccw
+				cur_x += to_relative_x;
+				cur_y += to_relative_y;
 				USART_Write(USART2, (unsigned char*)"Arc CCW\n\r", 9);  //serial testing line
 				break;
 
@@ -143,6 +147,14 @@ void Gcode_parser(void) {
 			break;
 		}
 	}
+
+	//Debug print
+	USART_Write(USART2, (unsigned char*)command[0], 4);  //serial testing
+	USART_Write(USART2, (unsigned char*)"\r\n", 2);  //serial testing
+	sprintf(str, "Cur: (%05d, %05d)\r\n", (int)(cur_x*1000), (int)(cur_y*1000));
+	USART_Write(USART2, (unsigned char*)str, strlen(str));  //serial testing line
+	sprintf(str, "Rel: (%05d, %05d)\r\n", (int)(to_relative_x*1000), (int)(to_relative_y*1000));
+	USART_Write(USART2, (unsigned char*)str, strlen(str));  //serial testing line
 	element_count = 0;
 	char_count = 0;
   }

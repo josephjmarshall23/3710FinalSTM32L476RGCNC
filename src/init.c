@@ -56,6 +56,7 @@ void system_init()
 	lineQueueCount = 0;
 
 	USART_Init(USART2);
+	uart_enable();
 	startupString(); //Prints a string over serial that tells G-code sender we are running GRBL firmware (we aren't, but pretend)
 //	char ch;
 //	USART_Read(USART2, (uint8_t*)&ch, 1);
