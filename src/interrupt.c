@@ -81,7 +81,7 @@ void writeLine(float x_dist, float y_dist, float feedrate) //Units are mm and mm
     time = len*60/(feedrate); //time is in seconds now (converted feedrate from mm/min to mm/sec) (Also compensated for being off by 2x)
     temp.numTicks = time*INTERRUPT_RATE;
     temp.dt2 = temp.numTicks << 1; //Multiply by 2
-    while (!getLineQueueSpace()) USART_Write(USART2, (unsigned char*)"noLineQueueSpace\r\n", 18); //Wait until ready
+    while (!getLineQueueSpace()) ;//USART_Write(USART2, (unsigned char*)"noLineQueueSpace\r\n", 18); //Wait until ready
     pushToLineQueue(temp);
 }
 
@@ -123,9 +123,9 @@ void updateLine() //Should be called repeatedly in main.c.
     curLine.numTicks = tmp.numTicks; //How many interrupt ticks this line will take to draw
     Dx = tmp.dx2-tmp.numTicks; //X decision variable (global)
     Dy = tmp.dy2-tmp.numTicks; //Y decision variable (global)
-    char str[40];
-    sprintf(str, "DX:%015ld DY:%015ld\r\n", Dx, Dy);
-	USART_Write(USART2, (unsigned char*)str, 39);
+//    char str[40];
+//    sprintf(str, "DX:%015ld DY:%015ld\r\n", Dx, Dy);
+//	USART_Write(USART2, (unsigned char*)str, 39);
 
     setDirection(tmp.direction);
     enableSteppers(); //Re-enable steppers

@@ -138,7 +138,7 @@ void parse_command(char *cmd)
 void g_command(char *cmd)
 {
 	static float parsed_x, parsed_y, parsed_z, parsed_f, parsed_i, parsed_j;
-
+	static char str[50];
 	//Get opcode
 	uint32_t num = atoi(cmd);
 	switch (num)
@@ -146,17 +146,30 @@ void g_command(char *cmd)
 	case 0:
 			//Actually, we treat 0 and 1 the same, so fall through to 1 here!
 	case 1:
-		parsed_x = parse(cmd, 'X') - cur_x; //Relative X (absolute - current)
-		parsed_y = parse(cmd, 'Y') - cur_y; //Relative Y (absolute - current)
+		parsed_x = parse(cmd, 'X'); //Absolute X
+		parsed_y = parse(cmd, 'Y'); //Absolute Y
 		parsed_z = parse(cmd, 'Z'); //We just care about the sign on Z
 		parsed_f = parse(cmd, 'F'); //Feedrate
 
-		if ((parsed_z > 0.0) && pen_active) writeAction(PEN_LIFT);
-		if ((parsed_z < 0.0) && !pen_active) writeAction(PEN_DROP);
+		if ((parsed_z > 0.0) && pen_active)
+		{
+			writeAction(PEN_LIFT);
+			pen_active = 0;
+		}
+		if ((parsed_z < 0.0) && !pen_active)
+		{
+			writeAction(PEN_DROP);
+			pen_active = 1;
+		}
+		if (parsed_x != 0) parsed_x -= cur_x;
+		if (parsed_y != 0) parsed_y -= cur_y;
 		if (parsed_f < MIN_FEEDRATE) parsed_f = DEFAULT_FEEDRATE;
 		writeLine(parsed_x, parsed_y, parsed_f);
 		cur_x += parsed_x;
 		cur_y += parsed_y;
+		//Debug prints
+//		sprintf(str, "Parsed %5d,%5d, now at %5d,%5d\nok\n", (int)(parsed_x), (int)(parsed_y), (int)(cur_x), (int)(cur_y));
+//		uart_write(str, 42);
 		break;
 	case 2:
 			//Similarly, we treat 2 and 3 the same, so fall through to 3 here
@@ -168,8 +181,16 @@ void g_command(char *cmd)
 		parsed_z = parse(cmd, 'Z'); //We just care about the sign on Z
 		parsed_f = parse(cmd, 'F'); //Feedrate
 
-		if ((parsed_z > 0.0) && pen_active) writeAction(PEN_LIFT);
-		if ((parsed_z < 0.0) && !pen_active) writeAction(PEN_DROP);
+		if ((parsed_z > 0.0) && pen_active)
+		{
+			writeAction(PEN_LIFT);
+			pen_active = 0;
+		}
+		if ((parsed_z < 0.0) && !pen_active)
+		{
+			writeAction(PEN_DROP);
+			pen_active = 1;
+		}
 		if (parsed_f < MIN_FEEDRATE) parsed_f = DEFAULT_FEEDRATE;
 		writeArc(parsed_x, parsed_y, parsed_i, parsed_j, parsed_f, (num-2));
 		cur_x += parsed_x;
