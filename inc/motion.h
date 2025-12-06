@@ -26,7 +26,7 @@ static inline void stepZ() //Make sure ODR is marked volatile
     GPIOB->ODR &= (~Z_STEP_BITPOS_GPIOB); //Pulse low
 }
 
-static inline void disableSteppers() //Enable pin is active low
+static inline void disableSteppers() //Enable pin is active low... supposedly?
 {
 	GPIOA->ODR &= (~ENABLE_BITPOS_GPIOA);
 }
@@ -52,7 +52,7 @@ static inline void penLift()
     for (int i = 0; i < 250; i++)
     {
     	stepZ();
-        for (int j = 0; j < 83; j++); //Delay
+        for (int j = 0; j < 200; j++); //Delay
     }
 }
 
@@ -62,7 +62,7 @@ static inline void penUnlift()
     for (int i = 0; i < 250; i++)
     {
     	stepZ();
-        for (int j = 0; j < 83; j++); //Delay
+        for (int j = 0; j < 200; j++); //Delay
     }
 }
 
