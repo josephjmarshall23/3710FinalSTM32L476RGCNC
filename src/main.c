@@ -29,8 +29,10 @@ int main()
 	//Initialize
 	system_init();
 
-	//Enable stepper motors and home axes
+	//Enable stepper motors and home axes. Start machine in known position and pen state
 	machine_init();
+
+	//Machine is now at (X_HOMING_POS, Y_HOMING_POS) with the pen active (dropped)
 
 	parse_loop(); //Endless loop that parses and executes commands
 //	disableSteppers();

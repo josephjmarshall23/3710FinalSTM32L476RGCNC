@@ -12,10 +12,10 @@ float findRadius(float x_dist, float y_dist) //These are distances from arc star
 	return sqrt(x_dist*x_dist + y_dist*y_dist);
 }
 
-//clockwise should be 1 for clockwise and 0 for counterclockwise
+//clockwise should be 0 for clockwise and 1 for counterclockwise
 //I'm worried this function may be an absolute monster.
 //It involves a TON of float math, including 2 divs, 2 atan2s, a fabs, a sqrt, and a lot of sin/cos
-void writeArc(float x_final_offset, float y_final_offset, float x_center_offset, float y_center_offset, float feedrate, int clockwise)
+void writeArc(float x_final_offset, float y_final_offset, float x_center_offset, float y_center_offset, float feedrate, int counterclockwise)
 {
 	float rad = findRadius(x_center_offset, y_center_offset);
 	if (rad < 0.1) //No-op
@@ -25,8 +25,8 @@ void writeArc(float x_final_offset, float y_final_offset, float x_center_offset,
 	float theta_end = atan2((y_final_offset - y_center_offset), (x_final_offset - x_center_offset));
 	float theta_total = theta_end-theta_start;
 
-	if (clockwise && theta_total > 0) theta_total -= TWO_PI;
-	if (!clockwise && theta_total < 0) theta_total += TWO_PI;
+	if (!counterclockwise && theta_total > 0) theta_total -= TWO_PI;
+	if (counterclockwise && theta_total < 0) theta_total += TWO_PI;
 
 	float arc_length = fabs(theta_total) * rad;
 

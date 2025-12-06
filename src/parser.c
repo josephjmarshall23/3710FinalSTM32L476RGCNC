@@ -20,12 +20,12 @@ uint8_t pen_active; //1 means down, 0 means lifted
 
 void error()
 {
-	uart_write("error:\n", 7);
+	while(!uart_write("error:\n", 7));
 }
 
 void ack()
 {
-	uart_write("ok\n", 3);
+	while(!uart_write("ok\n\n", 4));
 }
 
 //Given a string and delimiter (X, Y, Z, etc), parse the float value after the delimiter
@@ -74,7 +74,7 @@ void parse_loop(void)
 				command[num_chars] = '\0'; //Null-terminate
 				parse_command(command);
 				num_chars = 0;
-				while (!is_room_in_buffer)
+				while (!is_room_in_buffer) //Wait until the queue has enough room for a big command
 				{
 					updateLine();
 				}
@@ -88,14 +88,13 @@ void parse_loop(void)
 				}
 				else
 				{
-					uart_write("error:2Long\n", 12);
+					while(!uart_write("error:2Long\n", 12));
 					num_chars = 0; //Restart
 				}
 			}
 		}
 	}
 }
-
 
 void parse_command(char *cmd)
 {
@@ -114,7 +113,7 @@ void parse_command(char *cmd)
 			m_command(cmd+pos+1); //Pass everything after the M
 			break;
 		default:
-			uart_write("error:CmdNotRecognized\n", 23);
+			while(!uart_write("error:CmdNotRecognized\n", 23));
 			break;
 	}
 }
@@ -138,6 +137,7 @@ void parse_command(char *cmd)
 void g_command(char *cmd)
 {
 	static float parsed_x, parsed_y, parsed_z, parsed_f, parsed_i, parsed_j;
+	static float last_feedrate;
 	static char str[50];
 	//Get opcode
 	uint32_t num = atoi(cmd);
@@ -154,19 +154,22 @@ void g_command(char *cmd)
 		if ((parsed_z > 0.0) && pen_active)
 		{
 			writeAction(PEN_LIFT);
+//			while(!uart_write("LIFT\n", 5));
 			pen_active = 0;
 		}
 		if ((parsed_z < 0.0) && !pen_active)
 		{
 			writeAction(PEN_DROP);
+//			while(!uart_write("DROP\n", 5));
 			pen_active = 1;
 		}
 		if (parsed_x != 0) parsed_x -= cur_x;
 		if (parsed_y != 0) parsed_y -= cur_y;
-		if (parsed_f < MIN_FEEDRATE) parsed_f = DEFAULT_FEEDRATE;
+		if (parsed_f < MIN_FEEDRATE) parsed_f = last_feedrate;
 		writeLine(parsed_x, parsed_y, parsed_f);
 		cur_x += parsed_x;
 		cur_y += parsed_y;
+		last_feedrate = parsed_f;
 		//Debug prints
 //		sprintf(str, "Parsed %5d,%5d, now at %5d,%5d\nok\n", (int)(parsed_x), (int)(parsed_y), (int)(cur_x), (int)(cur_y));
 //		uart_write(str, 42);
@@ -184,32 +187,41 @@ void g_command(char *cmd)
 		if ((parsed_z > 0.0) && pen_active)
 		{
 			writeAction(PEN_LIFT);
+//			while(!uart_write("LIFT\n", 5));
 			pen_active = 0;
 		}
 		if ((parsed_z < 0.0) && !pen_active)
 		{
 			writeAction(PEN_DROP);
+//			while(!uart_write("DROP\n", 5));
 			pen_active = 1;
 		}
-		if (parsed_f < MIN_FEEDRATE) parsed_f = DEFAULT_FEEDRATE;
+		if (parsed_f < MIN_FEEDRATE) parsed_f = last_feedrate;
 		writeArc(parsed_x, parsed_y, parsed_i, parsed_j, parsed_f, (num-2));
 		cur_x += parsed_x;
 		cur_y += parsed_y;
+		last_feedrate = parsed_f;
+		break;
+	case 21: //G21 specifies units to be mm, which we assume to always be true
 		break;
 	case 28:
-		writeAction(PEN_LIFT | HOME_X | HOME_Y | PEN_DROP);
+		if (pen_active) writeAction(PEN_LIFT);
+		pen_active = 0;
+//		while(!uart_write("LIFT\n", 5));
+		writeAction(HOME_X | HOME_Y | PEN_DROP);
+//		while(!uart_write("DROP\n", 5));
 		cur_x = X_HOMING_POS;
 		cur_y = Y_HOMING_POS;
 		pen_active = 1;
 		break;
 	default:
-		uart_write("error:CmdNotRecognized\n", 23);
+		while(!uart_write("error:CmdNotRecognized\n", 23));
 		break;
 	}
 }
 
 /*
- * Currently, we don't support M-codes, but we don't throw an error.
+ * Currently, we don't support M-codes, but we pretend to!
  */
 void m_command(char *cmd)
 {
